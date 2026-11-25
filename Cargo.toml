@@ -1,0 +1,32 @@
+[package]
+name = "rust-otel-starter"
+version = "0.1.0"
+edition = "2021"
+description = "Rust 微服务脚手架：Axum + SQLite + OpenTelemetry 上报（OTLP traces/metrics）"
+license = "MIT"
+
+[dependencies]
+axum = "0.8"
+tokio = { version = "1", features = ["full"] }
+anyhow = "1"
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+uuid = { version = "1", features = ["v4", "serde"] }
+reqwest = { version = "0.12", features = ["json"] }
+
+sqlx = { version = "0.8", features = ["sqlite", "runtime-tokio", "migrate", "uuid"] }
+
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter"] }
+opentelemetry = "0.30"
+opentelemetry_sdk = { version = "0.30", features = ["trace", "metrics", "rt-tokio"] }
+# 注意：不要用 reqwest-client（异步），BatchSpanProcessor 的默认实现不支持它，
+# 必须用 reqwest-blocking-client（自带内部 runtime），见
+# https://docs.rs/opentelemetry_sdk/0.30.0/opentelemetry_sdk/trace/index.html
+opentelemetry-otlp = { version = "0.30", default-features = false, features = ["http-proto", "http-json", "reqwest-blocking-client", "trace", "metrics"] }
+opentelemetry-http = "0.30"
+tracing-opentelemetry = "0.31"
+
+[profile.release]
+lto = true
+codegen-units = 1
